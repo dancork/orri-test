@@ -5,7 +5,7 @@ export enum Day {
   Thursday = 4,
   Friday = 5,
   Weekday = 10,
-  All = 20,
+  Everyday = 20,
 }
 
 export type Schedule = {
@@ -15,5 +15,5 @@ export type Schedule = {
   endHour: number
   endMin: number
   subject: string
-  timeZone?: 'Europe/London' // optional if individual schedule is tied to a timezone
+  timeZone?: string
 }

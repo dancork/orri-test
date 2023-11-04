@@ -12,6 +12,7 @@ export const EmptyState = ({ heading, body, action }: EmptyStateProps) => {
   return (
     <Container
       sx={{
+        height: '100%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',

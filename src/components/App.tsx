@@ -6,12 +6,10 @@ import { AppRoutes } from './navigation/AppRoutes'
 
 export const App = () => {
   return (
-    <>
+    <AllTheProviders>
       <CssBaseline />
-      <AllTheProviders>
-        <AppBar />
-        <AppRoutes />
-      </AllTheProviders>
-    </>
+      <AppBar />
+      <AppRoutes />
+    </AllTheProviders>
   )
 }

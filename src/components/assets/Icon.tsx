@@ -11,13 +11,15 @@ import { far } from '@fortawesome/free-regular-svg-icons'
 
 library.add(fas, far)
 
-type FontAwesomeSvgIconProps = {
+type FontAwesomeSvgIconProps = React.ComponentPropsWithoutRef<
+  typeof SvgIcon
+> & {
   prefix?: IconPrefix
   icon: IconName
 }
 
 export const Icon = React.forwardRef<SVGSVGElement, FontAwesomeSvgIconProps>(
-  ({ icon: iconName, prefix = 'fas' }, ref) => {
+  ({ icon: iconName, prefix = 'fas', ...props }, ref) => {
     const iconDef = findIconDefinition({
       prefix,
       iconName,
@@ -30,7 +32,7 @@ export const Icon = React.forwardRef<SVGSVGElement, FontAwesomeSvgIconProps>(
     } = iconDef
 
     return (
-      <SvgIcon ref={ref} viewBox={`0 0 ${width} ${height}`}>
+      <SvgIcon {...props} ref={ref} viewBox={`0 0 ${width} ${height}`}>
         {typeof svgPathData === 'string' ? (
           <path d={svgPathData} />
         ) : (

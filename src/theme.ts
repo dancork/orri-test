@@ -1,4 +1,5 @@
 import { createTheme } from '@mui/material/styles'
+import { grey } from '@mui/material/colors'
 import { MappedLink } from './components/navigation/MappedLink'
 
 const theme = createTheme({
@@ -6,11 +7,19 @@ const theme = createTheme({
     primary: {
       main: '#ea6f4d',
     },
+    background: {
+      default: grey['200'],
+    },
     secondary: {
       main: '#4CA48B',
     },
   },
   components: {
+    MuiAppBar: {
+      defaultProps: {
+        elevation: 0,
+      },
+    },
     MuiLink: {
       defaultProps: {
         component: MappedLink,
@@ -20,6 +29,44 @@ const theme = createTheme({
       defaultProps: {
         LinkComponent: MappedLink,
         // disableRipple: true,
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          borderRadius: 999,
+        },
+      },
+      variants: [
+        {
+          props: { variant: 'outlined' },
+          style: {
+            backgroundColor: '#fff',
+          },
+        },
+        {
+          props: { variant: 'contained' },
+          style: {
+            boxShadow: 'none',
+          },
+        },
+      ],
+    },
+    MuiPaper: {
+      defaultProps: {
+        elevation: 0,
+      },
+      styleOverrides: {
+        root: {
+          borderRadius: 4,
+        },
+      },
+    },
+    MuiDialog: {
+      styleOverrides: {
+        root: {
+          borderRadius: 4,
+        },
       },
     },
   },

@@ -7,8 +7,6 @@ import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
 import MuiAppBar from '@mui/material/AppBar'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-
 import { Logo } from '../assets/Logo'
 import { MappedNavLink } from '../navigation/MappedNavLink'
 import { Icon } from '../assets/Icon'
@@ -24,7 +22,7 @@ export const AppBar = () => {
   const handleCloseNavMenu = () => setAnchorElNav(null)
 
   return (
-    <MuiAppBar position="fixed" elevation={0}>
+    <MuiAppBar position="fixed">
       <Toolbar>
         <Box
           sx={{
@@ -104,7 +102,7 @@ export const AppBar = () => {
                 href={url}
                 LinkComponent={MappedNavLink}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                sx={{ color: 'white', display: 'block' }}
               >
                 {title}
               </Button>
