@@ -44,9 +44,7 @@ const theme = createTheme({
       variants: [
         {
           props: { variant: 'outlined' },
-          style: {
-            // backgroundColor: '#fff',
-          },
+          style: {},
         },
       ],
     },

@@ -12,7 +12,6 @@ import { useRecoilValue } from 'recoil'
 import { calendarState, calendarTimeZoneState } from '../../../store'
 import { Icon } from '../../assets/Icon'
 import { Tooltip } from '@mui/material'
-import { formatTime } from '../../../util'
 import moment from 'moment-timezone'
 
 export const CalendarTimeline = () => {
@@ -69,16 +68,28 @@ export const CalendarTimeline = () => {
                 <TimelineContent>
                   <Typography fontWeight="500">{schedule.subject}</Typography>
                   <Typography variant="caption">
-                    {start.format('HH:mm')}
-                    {' - '}
-                    {end.format('HH:mm')}
+                    {`${start.format('HH:mm')} - ${end.format('HH:mm z')}`}
                   </Typography>
                   {(schedule.timeZone || userTimeZone !== timeZone) && (
                     <Tooltip
-                      title={`${formatTime(
-                        schedule.startHour,
-                        schedule.startMin,
-                      )} - ${formatTime(schedule.endHour, schedule.endMin)}`}
+                      title={
+                        <>
+                          <Typography variant="inherit" fontWeight="500">
+                            {schedule.timeZone
+                              ? `Based schedule time zone`
+                              : `This is your time zone`}
+                          </Typography>
+                          {`${moment({
+                            hours: schedule.startHour,
+                            minutes: schedule.startMin,
+                          }).format('HH:mm')} - ${moment({
+                            hours: schedule.endHour,
+                            minutes: schedule.endMin,
+                          })
+                            .tz(schedule.timeZone ?? userTimeZone, true)
+                            .format('HH:mm z')}`}
+                        </>
+                      }
                     >
                       <Typography
                         sx={{
