@@ -12,7 +12,7 @@ I chose to use vite as the core framework. It's a low config and **very** perfor
 
 From a design perspective, I wanted to focus on the experience so used MUI to accelerate the development of the interface. Where possible I themed it to look like the Orri brand, taking some styles and fonts from the website. With extra time I would customise this more extensively, to make it feel less like a generic material app.
 
-## Recoil
+### Recoil
 
 As this is a development task I didn't feel it required a large state management library so chose to use recoil. It's lightweight and minimalist/atomic so great for sharing small amounts of state and keeping the code clean.
 
@@ -51,6 +51,10 @@ Alternatively you can view a deployed version at [orri-test.vercel.app](https://
 ## Future Development
 
 If I had more time on the task I would tackle some of the following.
+
+### Logic
+
+Currently when adding a new schedule it only ensures overlaps don't happen in the same timezone. Moment timezone allows for comparing times/dates across time zones so it wouldn't be a huge amount of effort to adapt the logic to allow for this comparison and reduce overlaps further.
 
 ### Testing
 
