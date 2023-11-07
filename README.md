@@ -46,6 +46,8 @@ yarn dev
 
 Then navigate to [localhost:5173](http://localhost:5173/) in your web browser.
 
+Alternatively you can view a deployed version at [orri-test.vercel.app](https://orri-test.vercel.app).
+
 ## Future Development
 
 If I had more time on the task I would tackle some of the following.
