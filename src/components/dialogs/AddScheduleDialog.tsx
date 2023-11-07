@@ -11,35 +11,94 @@ import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
 import Autocomplete from '@mui/material/Autocomplete'
 import Grid from '@mui/material/Grid'
+import FormHelperText from '@mui/material/FormHelperText'
 
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilState } from 'recoil'
+import moment from 'moment-timezone'
 
 import {
   DEFAULT_NEW_SCHEDULE,
   addScheduleDialogOpenState,
   newScheduleState,
   scheduleListState,
-} from '../../store/schedule-state'
+} from '../../store'
 import { Day } from '../../types'
-import { enumKeys, zeropad } from '../../util'
-import { FormHelperText } from '@mui/material'
+import { compareDayValues, enumKeys } from '../../util'
 
 export const AddScheduleDialog = () => {
-  const setScheduleListState = useSetRecoilState(scheduleListState)
+  const [scheduleList, setScheduleList] = useRecoilState(scheduleListState)
   const [isOpen, setIsOpen] = useRecoilState(addScheduleDialogOpenState)
-  const [schedule, setSchedule] = useRecoilState(newScheduleState)
-  const { day, startHour, startMin, endHour, endMin, subject, timeZone } =
-    schedule
+  const [newSchedule, setNewSchedule] = useRecoilState(newScheduleState)
 
-  const close = () => setIsOpen(false)
-
-  const timeError = useMemo(
-    () => startHour > endHour || (startHour === endHour && startMin > endMin),
-    [startHour, startMin, endHour, endMin],
+  // creating moments to use for formatting and comparison
+  // not included time zone but that would be something to consider in the future
+  // because it can compare across them
+  const startMoment = useMemo(
+    () =>
+      moment({
+        hours: newSchedule.startHour,
+        minutes: newSchedule.startMin,
+      }),
+    [newSchedule.startHour, newSchedule.startMin],
+  )
+  const endMoment = useMemo(
+    () =>
+      moment({
+        hours: newSchedule.endHour,
+        minutes: newSchedule.endMin,
+      }),
+    [newSchedule.endHour, newSchedule.endMin],
   )
 
+  const timeError = useMemo(() => {
+    if (startMoment.isSameOrAfter(endMoment)) {
+      return 'Start time must be before end time'
+    }
+    if (
+      scheduleList.some(schedule => {
+        // for now we only compare same timezone
+        // theoretically could use moment to compare across timezones
+        if (schedule.timeZone !== newSchedule.timeZone) return false
+        if (!compareDayValues(newSchedule.day, schedule.day)) return false
+
+        // create moments to use for comparison
+        const compareStartMoment = moment({
+          hours: schedule.startHour,
+          minutes: schedule.startMin,
+        })
+        const compareEndMoment = moment({
+          hours: schedule.endHour,
+          minutes: schedule.endMin,
+        })
+
+        // checks for overlap
+        return (
+          startMoment.isBetween(
+            compareStartMoment,
+            compareEndMoment,
+            undefined,
+            '[)',
+          ) ||
+          endMoment.isBetween(
+            compareStartMoment,
+            compareEndMoment,
+            undefined,
+            '(]',
+          ) ||
+          (startMoment.isBefore(compareStartMoment) &&
+            endMoment.isAfter(compareEndMoment))
+        )
+      })
+    ) {
+      return 'Times cannot overlap an existing schedule'
+    }
+
+    // no error
+    return null
+  }, [newSchedule, scheduleList, startMoment, endMoment])
+
   return (
-    <Dialog onClose={close} open={isOpen}>
+    <Dialog onClose={() => setIsOpen(false)} open={isOpen}>
       <DialogTitle>Add a new schedule</DialogTitle>
       <DialogContent>
         <FormControl fullWidth sx={{ mt: 2 }}>
@@ -50,9 +109,9 @@ export const AddScheduleDialog = () => {
             id="frequency"
             labelId="frequency-label"
             label="Frequency"
-            value={day}
+            value={newSchedule.day}
             onChange={event =>
-              setSchedule(s => ({ ...s, day: event.target.value as Day }))
+              setNewSchedule(s => ({ ...s, day: event.target.value as Day }))
             }
             required
           >
@@ -69,17 +128,17 @@ export const AddScheduleDialog = () => {
               fullWidth
               label="Start time"
               type="time"
-              value={`${zeropad(startHour)}:${zeropad(startMin)}`}
+              value={startMoment.format('HH:mm')}
               onChange={event => {
                 const [hour, min] = event.target.value.split(':')
-                setSchedule(s => ({
+                setNewSchedule(s => ({
                   ...s,
                   startHour: Number.parseInt(hour),
                   startMin: Number.parseInt(min),
                 }))
               }}
               required
-              error={timeError}
+              error={timeError !== null}
             />
           </Grid>
           <Grid component={FormControl} item xs={6} sx={{ mt: 2 }}>
@@ -87,45 +146,49 @@ export const AddScheduleDialog = () => {
               fullWidth
               label="End time"
               type="time"
-              value={`${zeropad(endHour)}:${zeropad(endMin)}`}
+              value={endMoment.format('HH:mm')}
               onChange={event => {
                 const [hour, min] = event.target.value.split(':')
-                setSchedule(s => ({
+                setNewSchedule(s => ({
                   ...s,
                   endHour: Number.parseInt(hour),
                   endMin: Number.parseInt(min),
                 }))
               }}
               required
-              error={timeError}
+              error={timeError !== null}
             />
           </Grid>
         </Grid>
-        {timeError && (
-          <FormHelperText error>
-            Start time must be before end time
-          </FormHelperText>
+        {timeError !== null && (
+          <FormHelperText error>{timeError}</FormHelperText>
         )}
         <FormControl fullWidth sx={{ mt: 2 }}>
           <TextField
             label="Subject"
             fullWidth
-            value={subject}
+            value={newSchedule.subject}
             onChange={event =>
-              setSchedule(s => ({ ...s, subject: event.target.value }))
+              setNewSchedule(s => ({ ...s, subject: event.target.value }))
             }
             required
           />
         </FormControl>
         <FormControl fullWidth sx={{ mt: 2 }}>
           <Autocomplete
-            disablePortal
             id="timezone"
             options={Intl.supportedValuesOf('timeZone')}
-            renderInput={params => <TextField {...params} label="TimeZone" />}
-            value={timeZone ?? null}
+            renderInput={params => (
+              <TextField
+                {...params}
+                fullWidth
+                label="Time zone"
+                helperText={`Defaults to your timezone ${moment.tz.guess()}`}
+              />
+            )}
+            value={newSchedule.timeZone ?? null}
             onChange={(_event, newValue) =>
-              setSchedule(s => ({ ...s, timeZone: newValue ?? undefined }))
+              setNewSchedule(s => ({ ...s, timeZone: newValue ?? undefined }))
             }
           />
         </FormControl>
@@ -133,19 +196,25 @@ export const AddScheduleDialog = () => {
       <DialogActions>
         <Button
           onClick={() => {
-            setSchedule({ ...DEFAULT_NEW_SCHEDULE })
-            close()
+            setNewSchedule({ ...DEFAULT_NEW_SCHEDULE })
+            setIsOpen(false)
+          }}
+          sx={{
+            borderRadius: 2,
           }}
           color="inherit"
         >
           Cancel
         </Button>
         <Button
-          disabled={timeError || !subject}
+          disabled={timeError !== null || !newSchedule.subject}
+          sx={{
+            borderRadius: 2,
+          }}
           onClick={() => {
-            setScheduleListState(list => [...list, schedule])
-            setSchedule({ ...DEFAULT_NEW_SCHEDULE })
-            close()
+            setScheduleList(list => [...list, newSchedule])
+            setNewSchedule({ ...DEFAULT_NEW_SCHEDULE })
+            setIsOpen(false)
           }}
         >
           Add Schedule

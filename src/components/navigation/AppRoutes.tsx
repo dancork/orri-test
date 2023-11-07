@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 
-import { AppointmentsScreen } from '../screens/AppointmentsScreen'
-import { SchedulesScreen } from '../screens/SchedulesScreen'
+import { AppointmentsScreen } from '../screens/appointments/AppointmentsScreen'
+import { SchedulesScreen } from '../screens/schedules/SchedulesScreen'
 import { AddScheduleDialog } from '../dialogs/AddScheduleDialog'
 
 export const AppRoutes = () => {

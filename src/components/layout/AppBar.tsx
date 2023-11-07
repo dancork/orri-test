@@ -22,7 +22,7 @@ export const AppBar = () => {
   const handleCloseNavMenu = () => setAnchorElNav(null)
 
   return (
-    <MuiAppBar position="fixed">
+    <MuiAppBar position="fixed" sx={{ borderRadius: 0 }}>
       <Toolbar>
         <Box
           sx={{
@@ -102,7 +102,7 @@ export const AppBar = () => {
                 href={url}
                 LinkComponent={MappedNavLink}
                 onClick={handleCloseNavMenu}
-                sx={{ color: 'white', display: 'block' }}
+                sx={{ color: 'white', borderRadius: 3 }}
               >
                 {title}
               </Button>

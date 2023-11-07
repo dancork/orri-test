@@ -1,15 +1,20 @@
 import Box from '@mui/material/Box'
-import Toolbar from '@mui/material/Toolbar'
-import React from 'react'
+import { Toolbar } from '@mui/material'
 
-export const Screen = ({ children }: { children: React.ReactNode }) => (
-  <Box
-    minHeight="100vh"
-    width="100vw"
-    display="grid"
-    gridTemplateRows="auto 1fr"
-  >
-    <Toolbar />
-    <Box padding={3}>{children}</Box>
-  </Box>
-)
+import { useAppBarHeight } from '../../hooks/useAppBarHeight'
+
+export const Screen = ({
+  children,
+  ...props
+}: React.ComponentProps<typeof Box>) => {
+  const appBarHeight = useAppBarHeight()
+
+  return (
+    <>
+      <Toolbar />
+      <Box p={2} minHeight={`calc(100vh - ${appBarHeight}px)`} {...props}>
+        {children}
+      </Box>
+    </>
+  )
+}

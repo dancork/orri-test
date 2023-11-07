@@ -2,6 +2,8 @@ import React from 'react'
 import Container from '@mui/material/Container'
 import Typography from '@mui/material/Typography'
 
+import { useAppBarHeight } from '../hooks/useAppBarHeight'
+
 type EmptyStateProps = {
   heading: string
   body: string
@@ -9,10 +11,11 @@ type EmptyStateProps = {
 }
 
 export const EmptyState = ({ heading, body, action }: EmptyStateProps) => {
+  const appBarHeight = useAppBarHeight()
   return (
     <Container
       sx={{
-        height: '100%',
+        height: `calc(100vh - ${appBarHeight + 32}px)`,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',

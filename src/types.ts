@@ -1,3 +1,5 @@
+import { Moment } from 'moment-timezone'
+
 export enum Day {
   Monday = 1,
   Tuesday = 2,
@@ -16,4 +18,10 @@ export type Schedule = {
   endMin: number
   subject: string
   timeZone?: string
+}
+
+export type Appointment = {
+  start: Moment
+  end: Moment
+  schedule: Schedule
 }
